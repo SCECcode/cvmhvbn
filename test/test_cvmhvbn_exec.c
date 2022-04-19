@@ -64,10 +64,11 @@ int test_setparam()
 }
 
 /**
-#440000.000000,3782000.000000,800.000427,2.999969,3966.294189,2246.794678
-#440000.000000,3782000.000000,899.999695,2.999969,3927.796631,2213.606689
-#440000.000000,3782000.000000,1000.000122,3.000172,3886.519043,2178.033691
-surfce  1049.987
+X,Y,Z,lon,lat,depth,vp63_basin,vs63_basin,vp,vs
+281000.000000,3770999.968750,-1500.000488,-119.372791,34.058606,1346.081772,2056.878662,600.757446,2056.878662,600.757446
+-119.3728  34.0584 cvmh (vp/vs/rho) 1936.156/496.686/1876.055
+surface -163(ucvm)
+surface -150.00(cvmhvbn)
 **/
 int test_query_by_depth()
 {
@@ -92,9 +93,9 @@ int test_query_by_depth()
   }
 
   // Query a point.
-  pt.longitude = -117.65;
-  pt.latitude = 34.18;
-  pt.depth = 249;
+  pt.longitude = -119.3728;
+  pt.latitude = 34.0584;
+  pt.depth = 1500;
 
   if (test_assert_int(model_query(&pt, &ret, 1), 0) != 0) {
       return _failure("model_query failed");
@@ -105,9 +106,9 @@ int test_query_by_depth()
       return _failure("model_finalize failed");
   }
 
-  if ( test_assert_double(ret.vs, 2246.794678) ||
-       test_assert_double(ret.vp, 3966.294189) ||
-       test_assert_double(ret.rho, 2388.608443) ) {
+  if ( test_assert_double(ret.vs, 659.999451) ||
+       test_assert_double(ret.vp, 2125.599365) ||
+       test_assert_double(ret.rho, 1959.252836) ) {
      return _failure("unmatched result");
      } else {
        return _success();
@@ -138,10 +139,10 @@ int test_query_by_elevation()
   }
 
   // Query a point.
-  pt.longitude = -117.65;
-  pt.latitude = 34.18;
-  double pt_elevation = 800;
-  double pt_surf = 1049.9;
+  pt.longitude = -119.3728;
+  pt.latitude = 34.0584;
+  double pt_elevation = -1650;
+  double pt_surf = -150;
   pt.depth = pt_surf - pt_elevation; // elevation
 
   if (test_assert_int(model_query(&pt, &ret, 1), 0) != 0) {
@@ -153,9 +154,9 @@ int test_query_by_elevation()
       return _failure("model_finalize failed");
   }
 
-  if ( test_assert_double(ret.vs, 2246.794678) ||
-       test_assert_double(ret.vp, 3966.294189) ||
-       test_assert_double(ret.rho, 2388.608443) ) {
+  if ( test_assert_double(ret.vs, 659.999451) ||
+       test_assert_double(ret.vp, 2125.599365) ||
+       test_assert_double(ret.rho, 1959.252836) ) {
      return _failure("unmatched result");
      } else {
        return _success();
