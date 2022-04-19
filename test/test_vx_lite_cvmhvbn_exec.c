@@ -43,7 +43,7 @@ int test_vx_lite_cvhmlabn_points_elevation()
     return _failure("save test points failed");
   }
 
-  if (test_assert_int(runVXLiteCVMHV`BN(BIN_DIR, MODEL_DIR, infile, outfile, 
+  if (test_assert_int(runVXLiteCVMHVBN(BIN_DIR, MODEL_DIR, infile, outfile, 
 				MODE_ELEVATION), 0) != 0) {
     return _failure("vx_lite_cvmhvbn failure");
   }
