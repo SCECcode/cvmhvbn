@@ -1,7 +1,7 @@
 N#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([CVMHSGBN],[1.0],[mei@usc.edu])
+AC_INIT([CVMHVBN],[1.0],[mei@usc.edu])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_SRCDIR([src])
 AM_INIT_AUTOMAKE([foreign no-exeext])

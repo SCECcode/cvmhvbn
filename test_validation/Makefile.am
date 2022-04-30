@@ -18,6 +18,11 @@ all: $(bin_PROGRAMS)
 ############################################
 # Executables
 ############################################
+cvmhvbn_vxlite_validate.c : ../cvmhbn/test_validation/cvmhbn_vxlite_validate.c
+	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_vxlite_validate.c > cvmhvbn_vxlite_validate.c
+
+cvmhvbn_api_validate.c : ../cvmhbn/test_validation/cvmhbn_api_validate.c
+	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_api_validate.c > cvmhvbn_api_validate.c
 
 cvmhvbn_vxlite_validate : cvmhvbn_vxlite_validate.o 
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
@@ -25,25 +30,48 @@ cvmhvbn_vxlite_validate : cvmhvbn_vxlite_validate.o
 cvmhvbn_api_validate : cvmhvbn_api_validate.o 
 	$(CC) -o $@ $^ $(AM_LDFLAGS)
 
+### only run after ucvm is built and installed
 if UCVM
-cvmhvbn_ucvm_validate.o : cvmhvbn_ucvm_validate.c 
+cvmhvbn_ucvm_validate.c : ../cvmhbn/test_validation/cvmhbn_ucvm_validate.c
+	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_ucvm_validate.c > cvmhvbn_ucvm_validate.c
+cvmhvbn_ucvm_rerun.c : ../cvmhbn/test_validation/cvmhbn_ucvm_rerun.c
+	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_ucvm_rerun.c > cvmhvbn_ucvm_rerun.c
+
+cvmhvbn_ucvm_retry.c : ../cvmhbn/test_validation/cvmhbn_ucvm_retry.c
+	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_ucvm_retry.c > cvmhvbn_ucvm_retry.c
+
+cvmhvbn_ucvm_validate.o : cvmhvbn_ucvm_validate.c
 	$(CC) -c -o $@ $^ $(AM_CFLAGS) $(CFLAGS)
 
 cvmhvbn_ucvm_validate : cvmhvbn_ucvm_validate.o 
-	$(CC) -o $@ $^  $(LDFLAGS) $(AM_LDFLAGS)
+	$(CC) -o $@ $^ $(LDFLAGS) $(AM_LDFLAGS)
+
+cvmhvbn_ucvm_rerun.o : cvmhvbn_ucvm_rerun.c
+	$(CC) -c -o $@ $^ $(AM_CFLAGS) $(CFLAGS)
+
+cvmhvbn_ucvm_rerun : cvmhvbn_ucvm_rerun.o 
+	$(CC) -o $@ $^ $(LDFLAGS) $(AM_LDFLAGS)
+
+cvmhvbn_ucvm_retry.o : cvmhvbn_ucvm_retry.c
+	$(CC) -c -o $@ $^ $(AM_CFLAGS) $(CFLAGS)
+
+cvmhvbn_ucvm_retry : cvmhvbn_ucvm_retry.o 
+	$(CC) -o $@ $^ $(LDFLAGS) $(AM_LDFLAGS)
 endif
 
 ############################################
 # Special build targets
 ############################################
 
-run_validate: cvmhvbn_vxlite_validate cvmhvbn_api_validate
+run_validate: cvmhvbn_api_validate cvmhvbn_vxlite_validate
 	./run_vxlite_validate.sh
 	./run_api_validate.sh
 
-run_validate_with_ucvm: cvmhvbn_ucvm_validate
+run_validate_with_ucvm: cvmhvbn_ucvm_validate cvmhvbn_ucvm_rerun cvmhvbn_ucvm_retry
 	./run_ucvm_validate.sh
 
 clean:
-	rm -rf *~ *.o $(bin_PROGRAMS) cvmhvbn_ucvm_validate *.txt
+	rm -rf *~ *.o $(bin_PROGRAMS) cvmhvbn_ucvm_validate cvmhvbn_ucvm_rerun cvmhvbn_ucvm_retry *.txt
+	rm -rf cvmhvbn_ucvm_rerun.c cvmhvbn_ucvm_validate.c cvmhvbn_vxlite_validate.c cvmhvbn_api_validate.c cvmhvbn_ucvm_retry.c
+
 
