@@ -65,13 +65,15 @@ int test_setparam()
 
 /**
 id,X,Y,Z,depth,lon,lat,ucvm_depth,vp63_basin,vs63_basin,vp,vs,delta
-1316125,3818999.968750,281000.000000,800.000427,-0.700744,-119.384981,34.491133,101.961148,2116.271484,651.958191,0.000000,0.000000,-698.039279
+1316125,3818999.968750,281000.000000,800.000427,-0.700744,
+-119.384981,34.491133,101.961148,
+2116.271484,651.958191,0.000000,0.000000,-698.039279
 
--119.3850 34.4911 cvmh (vp/vs/rho)
-
--119.3728  34.0584 cvmh (vp/vs/rho) 1936.156/496.686/1876.055
-surface -163(ucvm)
-surface -150.00(cvmhvbn)
+-119.3850 34.4911 cvmh 
+surface 901.049(ucvm)
+vs30 385.1 
+cvmhvbn/cvmh ucvm_depth(800) vp/vs/rho (2479.527/965.11/2086.785)
+surface 800.7(cvmhvbn)
 **/
 int test_query_by_depth()
 {
@@ -96,9 +98,9 @@ int test_query_by_depth()
   }
 
   // Query a point.
-  pt.longitude = -119.3728;
-  pt.latitude = 34.0584;
-  pt.depth = 1500;
+  pt.longitude = -119.3850;
+  pt.latitude = 34.4911;
+  pt.depth = 800;
 
   if (test_assert_int(model_query(&pt, &ret, 1), 0) != 0) {
       return _failure("model_query failed");
@@ -109,6 +111,7 @@ int test_query_by_depth()
       return _failure("model_finalize failed");
   }
 
+fprintf(stderr,"XXX %lf %lf %lf\n", ret.vs, ret.vp, ret.rho);
   if ( test_assert_double(ret.vs, 659.999451) ||
        test_assert_double(ret.vp, 2125.599365) ||
        test_assert_double(ret.rho, 1959.252836) ) {
@@ -142,10 +145,10 @@ int test_query_by_elevation()
   }
 
   // Query a point.
-  pt.longitude = -119.3728;
-  pt.latitude = 34.0584;
-  double pt_elevation = -1650;
-  double pt_surf = -150;
+  pt.longitude = -119.3850;
+  pt.latitude = 34.4911;
+  double pt_elevation = -800;
+  double pt_surf = 800.7;
   pt.depth = pt_surf - pt_elevation; // elevation
 
   if (test_assert_int(model_query(&pt, &ret, 1), 0) != 0) {
@@ -157,6 +160,7 @@ int test_query_by_elevation()
       return _failure("model_finalize failed");
   }
 
+fprintf(stderr,"YYY %lf %lf %lf\n",ret.vs, ret.vp,ret.rho);
   if ( test_assert_double(ret.vs, 659.999451) ||
        test_assert_double(ret.vp, 2125.599365) ||
        test_assert_double(ret.rho, 1959.252836) ) {
