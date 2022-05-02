@@ -1,0 +1,51 @@
+name: cvmhvbn-ci
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  cvmhvbn-build-standalone-mac:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - name: set UCVM_INSTALL_PATH
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/cvmhvbn/target" >> $GITHUB_ENV
+    - name: checkout cvmhvbn main
+      uses: actions/checkout@v2
+      with: 
+        ref: main
+    - name: build cvmhvbn 
+      run: ./.github/scripts/cvmhvbn-build.sh 
+      shell: bash
+    - name: test cvmhvbn standalone
+      run: ./.github/scripts/cvmhvbn-test-standalone.sh
+      shell: bash
+
+  cvmhvbn-build-standalone-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7]
+    steps:
+    - name: set UCVM_INSTALL_PATH
+      run: echo "UCVM_INSTALL_PATH=$RUNNER_WORKSPACE/cvmhvbn/target" >> $GITHUB_ENV
+    - name: checkout cvmhvbn main
+      uses: actions/checkout@v2
+      with: 
+        ref: main
+    - name: build cvmhvbn
+      run: ./.github/scripts/cvmhvbn-build.sh
+      shell: bash
+    - name: test cvmhvbn standalone
+      run: ./.github/scripts/cvmhvbn-test-standalone.sh
+      shell: bash
+#    - name: Start SSH via Ngrok
+#      if: ${{ success() }}
+#      uses: luchihoratiu/debug-via-ssh@main
+#      with:
+#            NGROK_AUTH_TOKEN: ${{ secrets.NGROK_TOKEN }}
+#            NGROK_TIMEOUT: 3000
+#            SSH_PASS: ${{ secrets.NGROK_SECRET }}
