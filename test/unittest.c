@@ -22,8 +22,8 @@ int main (int argc, char *argv[])
 
   /* Run test suites */
   suite_cvmhvbn_exec(xmldir);
-//  suite_vx_cvmhvbn_exec(xmldir);
-//  suite_vx_lite_cvmhvbn_exec(xmldir);
+  suite_vx_cvmhvbn_exec(xmldir);
+  suite_vx_lite_cvmhvbn_exec(xmldir);
 
   if(_has_failure()) {
     return 1;

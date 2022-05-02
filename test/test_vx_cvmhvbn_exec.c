@@ -19,7 +19,7 @@
 #include "test_helper.h"
 #include "test_vx_cvmhvbn_exec.h"
 
-int VX_TESTS=4;
+int VX_TESTS=5;
 
 int test_vx_cvmhvbn_points_elevation()
 {
@@ -174,6 +174,40 @@ int test_vx_cvmhvbn_points_gd()
   return _success();
 }
 
+int test_vx_cvmhvbn_points_depth_cvmhvbn()
+{
+  char infile[1280];
+  char outfile[1280];
+  char reffile[1280];
+  char currentdir[1000];
+
+  printf("Test: vx_cvmhvbn executable with depth option (cvmhvbn)\n");
+
+  /* Save current directory */
+  getcwd(currentdir, 1000);
+
+  sprintf(infile, "%s/%s", currentdir, "./inputs/test-depth-cvmhvbn.in");
+  sprintf(outfile, "%s/%s", currentdir,
+          "test-vx-cvmhvbn-extract-depth-cvmhvbn.out");
+  sprintf(reffile, "%s/%s", currentdir,
+          "./ref/test-vx-cvmhvbn-extract-depth-cvmhvbn.ref");
+
+  if (test_assert_int(runVXCVMHVBN(BIN_DIR, MODEL_DIR, infile, outfile,
+                                MODE_DEPTH), 0) != 0) {
+    return _failure("vx_cvmhvbn failure");
+  }
+
+  /* Perform diff btw outfile and ref */
+  if (test_assert_file(outfile, reffile) != 0) {
+    return _failure("diff failure");
+  }
+
+  unlink(outfile);
+
+  return _success();
+}
+
+
 int suite_vx_cvmhvbn_exec(const char *xmldir)
 {
   suite_t suite;
@@ -207,6 +241,10 @@ int suite_vx_cvmhvbn_exec(const char *xmldir)
   strcpy(suite.tests[3].test_name, "test_vx_cvmhvbn_points_ge");
   suite.tests[3].test_func = &test_vx_cvmhvbn_points_ge;
   suite.tests[3].elapsed_time = 0.0;
+
+  strcpy(suite.tests[4].test_name, "itest_vx_cvmhvbn_points_depth_cvmhvbn");
+  suite.tests[4].test_func = &test_vx_cvmhvbn_points_depth_cvmhvbn;
+  suite.tests[4].elapsed_time = 0.0;
 
   if (test_run_suite(&suite) != 0) {
     fprintf(stderr, "Failed to execute tests\n");
