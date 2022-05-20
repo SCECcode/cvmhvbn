@@ -34,29 +34,41 @@ cvmhvbn_api_validate : cvmhvbn_api_validate.o
 if UCVM
 cvmhvbn_ucvm_validate.c : ../cvmhbn/test_validation/cvmhbn_ucvm_validate.c
 	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_ucvm_validate.c > cvmhvbn_ucvm_validate.c
+	$(call getLDFLAGS)
+
 cvmhvbn_ucvm_rerun.c : ../cvmhbn/test_validation/cvmhbn_ucvm_rerun.c
 	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_ucvm_rerun.c > cvmhvbn_ucvm_rerun.c
+	$(call getLDFLAGS)
 
 cvmhvbn_ucvm_retry.c : ../cvmhbn/test_validation/cvmhbn_ucvm_retry.c
 	sed -f ../cvmhbn/setup/cvmhvbn_sed_cmd ../cvmhbn/test_validation/cvmhbn_ucvm_retry.c > cvmhvbn_ucvm_retry.c
+	$(call getLDFLAGS)
 
 cvmhvbn_ucvm_validate.o : cvmhvbn_ucvm_validate.c
-	$(CC) -c -o $@ $^ $(AM_CFLAGS) $(CFLAGS)
+	$(CC) -c -o $@ $^ $(UCVM_CFLAGS) $(AM_CFLAGS) $(CFLAGS)
 
 cvmhvbn_ucvm_validate : cvmhvbn_ucvm_validate.o 
-	$(CC) -o $@ $^ $(LDFLAGS) $(AM_LDFLAGS)
+	$(CC) -o $@ $^ $(UCVM_LDFLAGS) $(AM_LDFLAGS)
 
 cvmhvbn_ucvm_rerun.o : cvmhvbn_ucvm_rerun.c
-	$(CC) -c -o $@ $^ $(AM_CFLAGS) $(CFLAGS)
+	$(CC) -c -o $@ $^ $(UCVM_CFLAGS) $(AM_CFLAGS) $(CFLAGS)
 
 cvmhvbn_ucvm_rerun : cvmhvbn_ucvm_rerun.o 
-	$(CC) -o $@ $^ $(LDFLAGS) $(AM_LDFLAGS)
+	$(CC) -o $@ $^ $(UCVM_LDFLAGS) $(AM_LDFLAGS)
 
 cvmhvbn_ucvm_retry.o : cvmhvbn_ucvm_retry.c
-	$(CC) -c -o $@ $^ $(AM_CFLAGS) $(CFLAGS)
+	$(CC) -c -o $@ $^ $(UCVM_CFLAGS) $(AM_CFLAGS) $(CFLAGS)
 
 cvmhvbn_ucvm_retry : cvmhvbn_ucvm_retry.o 
-	$(CC) -o $@ $^ $(LDFLAGS) $(AM_LDFLAGS)
+	$(CC) -o $@ $^ $(UCVM_LDFLAGS) $(AM_LDFLAGS)
+
+define getLDFLAGS =
+    if [ -f '$(UCVM_INSTALL_PATH)/model/cvmh/include/vx_sub.h' ]; then
+        UCVM_LDFLAGS = -L$(UCVM_INSTALL_PATH)/lib -L$(UCVM_INSTALL_PATH)/model/cvmh/lib -lvxapi -L$(UCVM_INSTALL_PATH)/model/cvmh/lib -lgeo -lucvm -dynamic  -L$(UCVM_INSTALL_PATH)/lib/euclid3/lib -letree -L$(UCVM_INSTALL_PATH)/lib/proj-5/lib -lproj -lpthread -L$(UCVM_INSTALL_PATH)/lib/fftw/lib -lfftw3 -lm -ldl
+    fi
+    UCVM_CFLAGS= -I$(UCVM_INSTALL_PATH)/include
+endef
+
 endif
 
 ############################################
